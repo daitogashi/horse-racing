@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[scripts]
+start = "python src/crawler.py"
+
+[requires]
+python_version = "3.7"
+
+[packages]
+beautifulsoup4 = "*"
+lxml = "*"
+requests = "*"
+
+[dev-packages]
