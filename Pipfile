@@ -12,6 +12,7 @@ python_version = "3.7"
 [packages]
 beautifulsoup4 = "*"
 lxml = "*"
+pandas = "*"
 requests = "*"
 
 [dev-packages]
