@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 import pandas as pd
@@ -56,42 +55,38 @@ def get_horse_data(url):
     return df
 
 def test():
-    data = {}
+    result = {}
+    result['data'] = []
     uma_info_link_list = get_uma_info_link(os.environ['TOKEY_DAISHOTEN'])
     for url in uma_info_link_list:
-        data[url] = {}
         df = get_horse_data(url)
         for idx, row in df.iterrows():
-            idx = str(idx)
-            data[url][idx] = {}
-
             if row['popularity'] == '':
                 continue
 
-            # 今回は不要なデータ
-            # data[url][idx]['date'] = row['date']
-            # data[url][idx]['place'] = row['place']
-
-            # 必要なデータ
-            data[url][idx]['horse_cnt'] = int(row['rank'].split('/')[1])
-            data[url][idx]['money'] = int(row['money'].replace(',', ''))
-            data[url][idx]['result_rank'] = int(row['rank'].split('/')[0])
-            data[url][idx]['len'] = int(row['len'][0:4])  # 当時との差分
-            data[url][idx]['popularity'] = int(row['popularity'])
-            data[url][idx]['weight'] = int(row['weight'])
+            data = MyClass()
+            data.url = url
+            data.horse_cnt = int(row['rank'].split('/')[1])
+            data.money = int(row['money'].replace(',', ''))
+            data.result_rank = int(row['rank'].split('/')[0])
+            data.len = int(row['len'][0:4])  # 当時との差分
+            data.popularity = int(row['popularity'])
+            data.weight = int(row['weight'])
             try:
                 time = datetime.strptime(row['time'], '%M:%S.%f')
-                data[url][idx]['sec'] = int(time.minute * 60 + time.second + time.microsecond / 1000000)
+                data.sec = int(time.minute * 60 + time.second + time.microsecond / 1000000)
             except ValueError:
                 time = datetime.strptime(row['time'], '%S.%f')
-                data[url][idx]['sec'] = int(time.second + time.microsecond / 1000000)
-            data[url][idx]['same_place'] = 1 if row['place'].replace('☆ ', '').startswith('大井') else 0
+                data.sec = int(time.second + time.microsecond / 1000000)
+            data.same_place = 1 if row['place'].replace('☆ ', '').startswith('大井') else 0
             # 馬場状態
-            data[url][idx]['soil_heavy'] = 1 if row['weather'][-2:] == '/重' else 0  # 当日と同じデータだけにする
-            data[url][idx]['soil_s_heavy'] = 1 if row['weather'][-2:] == '稍重' else 0  # 当日と同じデータだけにする
-            data[url][idx]['soil_good'] = 1 if row['weather'][-2:] == '/良' else 0  # 当日と同じデータだけにする
-            data[url][idx]['soil_bad'] = 1 if row['weather'][-2:] == '不良' else 0  # 当日と同じデータだけにする
-    print(data)
+            data.soil_heavy = 1 if row['weather'][-2:] == '/重' else 0  # 当日と同じデータだけにする
+            data.soil_s_heavy = 1 if row['weather'][-2:] == '稍重' else 0  # 当日と同じデータだけにする
+            data.soil_good = 1 if row['weather'][-2:] == '/良' else 0  # 当日と同じデータだけにする
+            data.soil_bad = 1 if row['weather'][-2:] == '不良' else 0  # 当日と同じデータだけにする
+
+            result['data'].append(data)
+    print(json.dumps(result, default=default_method, indent=2))
 
 def nankankeiba_20191229():
     data = []
@@ -128,7 +123,7 @@ def nankankeiba_20191229():
     print(json.dumps(data, default=default_method, indent=2))
 
 def main():
-    nankankeiba_20191229()
+    test()
 
 if __name__ == '__main__':
     try:
