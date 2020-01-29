@@ -18,8 +18,11 @@ def json2csv():
 
     # dataの書き込み
     output.writerow(target_dicts[0].keys())  # header row
+    # print(target_dicts[0].keys())
     for target_dict in target_dicts:
-        output.writerow(target_dict)  # values row
+        print(target_dict)
+        output.writerow(target_dict.values())  # values row
+    csv_file.close()
 
 def main():
     json2csv()
@@ -27,5 +30,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except:
-        pass
+    except Exception as e:
+        print(e)
